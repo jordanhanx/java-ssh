@@ -15,9 +15,9 @@ import com.jcraft.jsch.Session;
 
 public class App {
 
-    private static final String HOST = "vcm-34287.vm.duke.edu";
+    private static final String HOST = "dcc-login.oit.duke.edu";
     private static final String USERNAME = "xh123";
-    private static final String PASSWORD = "";
+    private static final String PRIVATEKEY_PATH = "~/.ssh/id_rsa";
 
     public String getGreeting() {
         return "Hello World!";
@@ -27,8 +27,8 @@ public class App {
         System.out.println(new App().getGreeting());
         try {
             JSch jsch = new JSch();
+            jsch.addIdentity(PRIVATEKEY_PATH);
             Session session = jsch.getSession(USERNAME, HOST);
-            session.setPassword(PASSWORD);
             session.setConfig("StrictHostKeyChecking", "no");
             session.connect(5000);
 
