@@ -3,52 +3,65 @@
  */
 package javasshdemo;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public class App {
 
     private static final String HOST = "dcc-login.oit.duke.edu";
     private static final String USERNAME = "xh123";
     private static final String PRIVATEKEY_PATH = "~/.ssh/id_rsa";
+    private static final String KNOWNHOSTS_PATH = "~/.ssh/known_hosts";
 
     public String getGreeting() {
         return "Hello World!";
     }
 
-    public static void main(String[] args) throws JSchException, IOException {
+    public static void main(String[] args) throws JSchException, IOException, SftpException {
         System.out.println(new App().getGreeting());
-        try {
-            JSch jsch = new JSch();
-            jsch.addIdentity(PRIVATEKEY_PATH);
-            Session session = jsch.getSession(USERNAME, HOST);
-            session.setConfig("StrictHostKeyChecking", "no");
-            session.connect(5000);
+        // try {
+        // JSch jsch = new JSch();
+        // jsch.addIdentity(PRIVATEKEY_PATH);
+        // jsch.setKnownHosts(KNOWNHOSTS_PATH);
+        // Session session = jsch.getSession(USERNAME, HOST);
+        // session.connect(5000);
 
-            ChannelExec channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand("whoami");
-            channel.setInputStream(null);
-            InputStream in = channel.getInputStream();
-            channel.connect(5000);
+        // ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
+        // ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
+        // channelSftp.connect(50000);
 
-            channel.disconnect();
-            session.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // channelSftp.mkdir("test-jsch");
+        // channelSftp.cd("test-jsch");
+        // channelSftp.put("../hello-world.sh", "./hello-world.sh");
+        // channelSftp.chmod(0700, "./hello-world.sh");
+
+        // channelExec.setCommand("cd test-jsch/; ./hello-world.sh");
+        // channelExec.connect(5000);
+        // channelExec.disconnect();
+        // channelSftp.get("./helloworld.txt", "../helloworld.txt");
+
+        // channelExec.setCommand("./hello-world.sh > helloworld2.txt");
+        // channelExec.connect(5000);
+        // channelExec.disconnect();
+
+        // channelSftp.get("./helloworld2.txt", "../helloworld2.txt");
+
+        // channelSftp.disconnect();
+        // channelExec.disconnect();
+        // session.disconnect();
+        // } catch (RuntimeException ex) {
+        // ex.printStackTrace();
+        // }
+
+        SSHService sshService = new SSHService(HOST, USERNAME, PRIVATEKEY_PATH, KNOWNHOSTS_PATH);
+        sshService.execCommands("mkdir test-jsch", "cd test-jsch");
+        sshService.sftpFromLocal("../hello-world.sh", "./hello-world.sh");
+        sshService.execCommands("chmod 0700 hello-world.sh", "./hello-world.sh");
+        sshService.sftpFromRemote("./helloworld.txt", "../helloworld.txt");
+
+        sshService.close();
     }
 
 }
