@@ -20,40 +20,6 @@ public class App {
 
     public static void main(String[] args) throws JSchException, IOException, SftpException {
         System.out.println(new App().getGreeting());
-        // try {
-        // JSch jsch = new JSch();
-        // jsch.addIdentity(PRIVATEKEY_PATH);
-        // jsch.setKnownHosts(KNOWNHOSTS_PATH);
-        // Session session = jsch.getSession(USERNAME, HOST);
-        // session.connect(5000);
-
-        // ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
-        // ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
-
-        // channelSftp.connect(50000);
-
-        // channelSftp.mkdir("test-jsch");
-        // channelSftp.cd("test-jsch");
-        // channelSftp.put("../hello-world.sh", "./hello-world.sh");
-        // channelSftp.chmod(0700, "./hello-world.sh");
-
-        // channelExec.setCommand("cd test-jsch/; ./hello-world.sh");
-        // channelExec.connect(5000);
-        // channelExec.disconnect();
-        // channelSftp.get("./helloworld.txt", "../helloworld.txt");
-
-        // channelExec.setCommand("./hello-world.sh > helloworld2.txt");
-        // channelExec.connect(5000);
-        // channelExec.disconnect();
-
-        // channelSftp.get("./helloworld2.txt", "../helloworld2.txt");
-
-        // channelSftp.disconnect();
-        // channelExec.disconnect();
-        // session.disconnect();
-        // } catch (RuntimeException ex) {
-        // ex.printStackTrace();
-        // }
 
         SSHService sshService = new SSHService(HOST, USERNAME, PRIVATEKEY_PATH, KNOWNHOSTS_PATH);
         sshService.execCommands("mkdir test-jsch", "cd test-jsch");
