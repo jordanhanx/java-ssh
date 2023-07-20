@@ -18,14 +18,14 @@ public class App {
         return "Hello World!";
     }
 
-    public static void main(String[] args) throws JSchException, IOException, SftpException {
+    public static void main(String[] args) throws JSchException, IOException, SftpException, InterruptedException {
         System.out.println(new App().getGreeting());
 
         SSHService sshService = new SSHService(HOST, USERNAME, PRIVATEKEY_PATH, KNOWNHOSTS_PATH);
-        sshService.execCommands("mkdir test-jsch", "cd test-jsch");
-        sshService.sftpFromLocal("../hello-world.sh", "./hello-world.sh");
-        sshService.execCommands("chmod 0700 hello-world.sh", "./hello-world.sh");
-        sshService.sftpFromRemote("./helloworld.txt", "../helloworld.txt");
+        sshService.execCommands("mkdir test-jsch");
+        sshService.sftpFromLocal("../hello-world.sh", "./test-jsch/hello-world.sh");
+        sshService.execCommands("cd test-jsch", "chmod 0700 hello-world.sh", "./hello-world.sh");
+        sshService.sftpFromRemote("./test-jsch/helloworld.txt", "../helloworld.txt");
 
         sshService.close();
     }

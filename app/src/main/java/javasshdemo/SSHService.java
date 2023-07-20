@@ -21,11 +21,14 @@ public class SSHService {
         this.session.connect(5000);
     }
 
-    public void execCommands(String... commands) throws JSchException {
+    public void execCommands(String... commands) throws JSchException, InterruptedException {
         ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
         try {
             channelExec.setCommand(String.join(";", commands));
             channelExec.connect(5000);
+            while (!channelExec.isClosed()) {
+                Thread.sleep(1000);
+            }
         } catch (RuntimeException ex) {
             System.out.println(ex.getCause().getMessage());
         } finally {

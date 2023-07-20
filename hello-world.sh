@@ -1,5 +1,5 @@
 #!/bin/bash
 
-whoami
+sleep 30
 
 echo "Hello World" > ./helloworld.txt
