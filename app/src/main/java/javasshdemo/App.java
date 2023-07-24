@@ -21,13 +21,30 @@ public class App {
     public static void main(String[] args) throws JSchException, IOException, SftpException, InterruptedException {
         System.out.println(new App().getGreeting());
 
-        SSHService sshService = new SSHService(HOST, USERNAME, PRIVATEKEY_PATH, KNOWNHOSTS_PATH);
-        sshService.execCommands("mkdir test-jsch");
-        sshService.sftpFromLocal("../hello-world.sh", "./test-jsch/hello-world.sh");
-        sshService.execCommands("cd test-jsch", "chmod 0700 hello-world.sh", "./hello-world.sh");
-        sshService.sftpFromRemote("./test-jsch/helloworld.txt", "../helloworld.txt");
+        testSSH();
+        // testS3();
+    }
+
+    public static void testSSH() throws JSchException, IOException, SftpException, InterruptedException {
+        SSHService sshService = new SSHService(HOST, USERNAME, PRIVATEKEY_PATH,
+                KNOWNHOSTS_PATH);
+
+        sshService.execCommands("whoami");
+        // sshService.execCommands("mkdir test-jsch");
+        // sshService.sftpFromLocal("../hello-world.sh", "./test-jsch/hello-world.sh");
+        // sshService.execCommands("cd test-jsch", "chmod 0700 hello-world.sh",
+        // "./hello-world.sh");
+        // sshService.sftpFromRemote("./test-jsch/helloworld.txt", "../helloworld.txt");
 
         sshService.close();
+    }
+
+    public static void testS3() throws IOException {
+        AwsS3Service s3 = new AwsS3Service();
+        s3.uploadObj("aipb.duke.bucket1", "test-key-1", "Hello World???".getBytes());
+        byte[] bytes = s3.getObj("aipb.duke.bucket1", "test-key-1");
+        System.out.println(new String(bytes));
+        s3.deleteObj("aipb.duke.bucket1", "test-key-1");
     }
 
 }
