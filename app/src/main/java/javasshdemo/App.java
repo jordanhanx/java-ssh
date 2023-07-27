@@ -21,20 +21,22 @@ public class App {
     public static void main(String[] args) throws JSchException, IOException, SftpException, InterruptedException {
         System.out.println(new App().getGreeting());
 
-        testSSH();
+        // testSSH();
         // testS3();
+        testAIGC();
     }
 
     public static void testSSH() throws JSchException, IOException, SftpException, InterruptedException {
-        SSHService sshService = new SSHService(HOST, USERNAME, PRIVATEKEY_PATH,
+        DukeDccSshService sshService = new DukeDccSshService(HOST, USERNAME, PRIVATEKEY_PATH,
                 KNOWNHOSTS_PATH);
 
         sshService.execCommands("whoami");
-        // sshService.execCommands("mkdir test-jsch");
-        // sshService.sftpFromLocal("../hello-world.sh", "./test-jsch/hello-world.sh");
-        // sshService.execCommands("cd test-jsch", "chmod 0700 hello-world.sh",
-        // "./hello-world.sh");
-        // sshService.sftpFromRemote("./test-jsch/helloworld.txt", "../helloworld.txt");
+        sshService.execCommands("pwd");
+        sshService.execCommands("mkdir -p test-jsch");
+        sshService.sftpFromLocal("../hello-world.sh", "./test-jsch/hello-world.sh");
+        sshService.execCommands("chmod 0700 test-jsch/hello-world.sh");
+        sshService.execCommands("/opt/slurm/bin/srun test-jsch/hello-world.sh");
+        sshService.sftpFromRemote("helloworld.txt", "../helloworld.txt");
 
         sshService.close();
     }
@@ -45,6 +47,18 @@ public class App {
         byte[] bytes = s3.getObj("aipb.duke.bucket1", "test-key-1");
         System.out.println(new String(bytes));
         s3.deleteObj("aipb.duke.bucket1", "test-key-1");
+    }
+
+    public static void testAIGC() throws JSchException, SftpException, IOException {
+        DukeDccSshService sshService = new DukeDccSshService(HOST, USERNAME, PRIVATEKEY_PATH,
+                KNOWNHOSTS_PATH);
+        DukeDccAIGCService dukeDccAIGCService = new DukeDccAIGCService(sshService, "scripts");
+
+        dukeDccAIGCService.trainImageGenerationModel("testuser", 233,
+                "scripts/dataset/*", "Qingmei");
+
+        // dukeDccAIGCService.text2image("testuser", 233,
+        // "Xiaobai had two pets called Xiaohei and Bidiu in a picturesque village.");
     }
 
 }

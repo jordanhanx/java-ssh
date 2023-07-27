@@ -1,5 +1,5 @@
 #!/bin/bash
 
-sleep 30
+sleep 3
 
 echo "Hello World" > ./helloworld.txt
