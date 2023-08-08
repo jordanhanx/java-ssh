@@ -4,6 +4,11 @@
 package javasshdemo;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
@@ -21,9 +26,12 @@ public class App {
     public static void main(String[] args) throws JSchException, IOException, SftpException, InterruptedException {
         System.out.println(new App().getGreeting());
 
-        // testSSH();
         // testS3();
-        testAIGC();
+
+        testSSH();
+
+        // testAIGC();
+
     }
 
     public static void testSSH() throws JSchException, IOException, SftpException, InterruptedException {
@@ -34,9 +42,9 @@ public class App {
         sshService.execCommands("pwd");
         sshService.execCommands("mkdir -p test-jsch");
         sshService.sftpFromLocal("../hello-world.sh", "./test-jsch/hello-world.sh");
-        sshService.execCommands("chmod 0700 test-jsch/hello-world.sh");
-        sshService.execCommands("/opt/slurm/bin/srun test-jsch/hello-world.sh");
-        sshService.sftpFromRemote("helloworld.txt", "../helloworld.txt");
+        // sshService.execCommands("chmod 0700 test-jsch/hello-world.sh");
+        // sshService.execCommands("/opt/slurm/bin/srun test-jsch/hello-world.sh");
+        // sshService.sftpFromRemote("helloworld.txt", "../helloworld.txt");
 
         sshService.close();
     }
@@ -46,6 +54,10 @@ public class App {
         s3.uploadObj("aipb.duke.bucket1", "test-key-1", "Hello World???".getBytes());
         byte[] bytes = s3.getObj("aipb.duke.bucket1", "test-key-1");
         System.out.println(new String(bytes));
+
+        s3.uploadObj("aipb.duke.bucket1", "test-key-1", "!!!!Hello World???".getBytes());
+        System.out.println(new String(s3.getObj("aipb.duke.bucket1", "test-key-1")));
+
         s3.deleteObj("aipb.duke.bucket1", "test-key-1");
     }
 
@@ -54,11 +66,25 @@ public class App {
                 KNOWNHOSTS_PATH);
         DukeDccAIGCService dukeDccAIGCService = new DukeDccAIGCService(sshService, "scripts");
 
-        dukeDccAIGCService.trainImageGenerationModel("testuser", 233,
-                "scripts/dataset/*", "Qingmei");
+        // new Thread(() -> {
+        // try {
+        // dukeDccAIGCService.trainImageGenerationModel("testuser2", 234,
+        // "scripts/dataset/*", "Zhuma");
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
+        // }).start();
+
+        // dukeDccAIGCService.trainImageGenerationModel("testuser", 233,
+        // "scripts/dataset/*", "Qingmei");
 
         // dukeDccAIGCService.text2image("testuser", 233,
-        // "Xiaobai had two pets called Xiaohei and Bidiu in a picturesque village.");
+        // "Xiaobai had two pets called Xiaohei and Bidiu in a picturesque village.",
+        // "Xiaobai, Xiaohei, and Bidiu embarked on exciting adventures every
+        // morning,exploring forests and enjoying the wonders of nature.");
+
+        // dukeDccAIGCService.genStoryFromPrompt("test_user", "a dog named Max loves
+        // running", 5);
     }
 
 }

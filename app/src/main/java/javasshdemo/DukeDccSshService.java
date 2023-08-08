@@ -19,6 +19,9 @@ public class DukeDccSshService {
 
     public DukeDccSshService(String HOST, String USERNAME, String PRIVATEKEY_PATH, String KNOWNHOSTS_PATH)
             throws JSchException {
+
+        // JSch.setConfig("StrictHostKeyChecking", "no");
+
         this.jsch = new JSch();
         this.jsch.addIdentity(PRIVATEKEY_PATH);
         this.jsch.setKnownHosts(KNOWNHOSTS_PATH);
