@@ -116,14 +116,14 @@ def save_story(full_story):
     # story_dict = {f"paragraph_{i+1}": paragraph.strip() for i, paragraph in enumerate(full_story)}
 
     # Save the dictionary as a JSON file in the specified OUTPUT_DIR
-    with open(os.path.join(output_dir, "storyyyy.json"), "w") as json_file:
+    with open(os.path.join(output_dir, "story.json"), "w") as json_file:
         json.dump(full_story, json_file, indent=4)
 
 
 if __name__ == "__main__":
     # Check if the number of command-line arguments is correct
-    if len(sys.argv) != 2:
-        print("Usage: python Llama2.py <prompt> <paragraphs-num>")
+    if len(sys.argv) != 3:
+        print("Usage: python3 Llama2.py <prompt> <paragraphs-num>")
         sys.exit(1)
 
     prompt = sys.argv[1]

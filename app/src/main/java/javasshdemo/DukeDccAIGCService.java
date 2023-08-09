@@ -3,7 +3,9 @@ package javasshdemo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
@@ -67,23 +69,32 @@ public class DukeDccAIGCService {
                 }
         }
 
-        public void genStoryFromPrompt(String taskTag, String prompt, int num)
+        public List<String> genStoryFromPrompt(String taskTag, String prompt, int num)
                         throws JSchException, IOException, SftpException {
-                // final String storyGenShellScriptPath = "scripts_llama2/generate_story.sh";
-                final String storyGenPyScriptPath = "scripts_llama2/Llama2.py";
 
-                String localDir = new String("story_generation/" + taskTag).replaceAll("\\s+", "");
-                String remoteDir = new String("story_generation/" + taskTag).replaceAll("\\s+", "");
+                final String storyGenScriptPath = "scripts_llama2/Llama2.py";
+
+                String localDir = new String("llama2/" + taskTag).replaceAll("\\s+", "");
+                Files.createDirectories(Paths.get(localDir));
+
+                String remoteDir = new String("llama2/" + taskTag).replaceAll("\\s+", "");
 
                 sshService.execCommands("mkdir -p " + remoteDir);
-                // sshService.sftpFromLocal(storyGenShellScriptPath, remoteDir);
-                sshService.sftpFromLocal(storyGenPyScriptPath, remoteDir);
+                sshService.sftpFromLocal(storyGenScriptPath, remoteDir);
                 sshService.execCommands(
-                                "chmod 0711 " + remoteDir + "/generate_story.sh",
-                                "export OUTPUT_DIR=\".\"",
-                                "/opt/slurm/bin/srun -p gpu-common --gres=gpu:RTXA5000:1 " + remoteDir
-                                                + "/python3 Llama2.py " + prompt + num);
-                sshService.sftpFromLocal(remoteDir + "/story.json", localDir);
+                                // "chmod 0711 " + remoteDir + "/generate_story.sh",
+                                "export OUTPUT_DIR=" + remoteDir + "/",
+                                "/opt/slurm/bin/srun -p gpu-common --gres=gpu:RTXA5000:1 python3 "
+                                                + remoteDir + "/Llama2.py " + "\"" + prompt + "\" " + num);
+                sshService.sftpFromRemote(remoteDir + "/storyyyy.json", localDir);
+
+                byte[] jsonData = Files.readAllBytes(Paths.get(localDir + "/storyyyy.json"));
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<String> stringList = objectMapper.readValue(jsonData, List.class);
+
+                sshService.execCommands("rm -rf " + remoteDir);
+
+                return stringList;
         }
 
 }

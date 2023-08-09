@@ -28,9 +28,9 @@ public class App {
 
         // testS3();
 
-        testSSH();
+        // testSSH();
 
-        // testAIGC();
+        testAIGC();
 
     }
 
@@ -83,8 +83,11 @@ public class App {
         // "Xiaobai, Xiaohei, and Bidiu embarked on exciting adventures every
         // morning,exploring forests and enjoying the wonders of nature.");
 
-        // dukeDccAIGCService.genStoryFromPrompt("test_user", "a dog named Max loves
-        // running", 5);
+        List<String> segments = dukeDccAIGCService.genStoryFromPrompt("task_test_user", "a dog named Max loves running",
+                5);
+        for (String seg : segments) {
+            System.out.println(seg);
+        }
     }
 
 }
